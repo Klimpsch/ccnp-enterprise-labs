@@ -1,0 +1,596 @@
+lab:
+  title: CCNP-Enterprise-EIGRP-Core
+  description: 'Mid-size CCNP practice lab (~17 nodes, IOSv/IOSvL2). EIGRP is the core routing protocol.
+    Sections: EIGRP core (named mode, summarization, stub, variance, authentication), L2 access, FHRP+IP
+    SLA, BGP (eBGP+iBGP, redistribute EIGRP), EIGRP<->OSPF redistribution at the branch, and a DMVPN overlay
+    running EIGRP. All point-to-point links are /31. Section tags drive CML smart annotations.'
+  version: 0.3.0
+  notes: "SMART-ANNOTATION TAGS (CML 2.8+ auto-groups by tag):\n  S1-EIGRP-core   CORE1/2, DIST1/2, WAN1\n\
+    \  S1a-EIGRP-stub  SRV-CORE segment\n  S2-L2-access    ACC1/2/3, ACC-SW-EXT\n  S3-FHRP-IPSLA   DIST1/2\n\
+    \  S4-BGP          CORE1/2, ISP1/2\n  S5-Redistribution  BRANCH-EDGE/R1/SW (OSPF at branch)\n  S6-DMVPN\
+    \        WAN1, BRANCH-EDGE, INET-SW\nAll point-to-point links use /31 (RFC 3021).\n"
+nodes:
+- id: n0
+  label: CORE1
+  node_definition: iosv
+  x: 0
+  y: -200
+  configuration: 'hostname CORE1
+
+    ip routing
+
+    '
+  interfaces:
+  - id: n0i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n0i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  - id: n0i2
+    slot: 2
+    label: GigabitEthernet0/2
+    type: physical
+  - id: n0i3
+    slot: 3
+    label: GigabitEthernet0/3
+    type: physical
+  - id: n0i4
+    slot: 4
+    label: GigabitEthernet0/4
+    type: physical
+  ram: 1024
+  tags:
+  - S1-EIGRP-core
+  - S4-BGP
+- id: n1
+  label: CORE2
+  node_definition: iosv
+  x: 300
+  y: -200
+  configuration: 'hostname CORE2
+
+    ip routing
+
+    '
+  interfaces:
+  - id: n1i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n1i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  - id: n1i2
+    slot: 2
+    label: GigabitEthernet0/2
+    type: physical
+  - id: n1i3
+    slot: 3
+    label: GigabitEthernet0/3
+    type: physical
+  - id: n1i4
+    slot: 4
+    label: GigabitEthernet0/4
+    type: physical
+  - id: n1i5
+    slot: 5
+    label: GigabitEthernet0/5
+    type: physical
+  ram: 1024
+  tags:
+  - S1-EIGRP-core
+  - S4-BGP
+- id: n2
+  label: DIST1
+  node_definition: iosvl2
+  x: 0
+  y: -50
+  configuration: 'hostname DIST1
+
+    ip routing
+
+    '
+  interfaces:
+  - id: n2i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n2i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  - id: n2i2
+    slot: 2
+    label: GigabitEthernet0/2
+    type: physical
+  - id: n2i3
+    slot: 3
+    label: GigabitEthernet0/3
+    type: physical
+  - id: n2i4
+    slot: 4
+    label: GigabitEthernet1/0
+    type: physical
+  - id: n2i5
+    slot: 5
+    label: GigabitEthernet1/1
+    type: physical
+  - id: n2i6
+    slot: 6
+    label: GigabitEthernet1/2
+    type: physical
+  - id: n2i7
+    slot: 7
+    label: GigabitEthernet1/3
+    type: physical
+  ram: 768
+  tags:
+  - S1-EIGRP-core
+  - S3-FHRP-IPSLA
+- id: n3
+  label: DIST2
+  node_definition: iosvl2
+  x: 300
+  y: -50
+  configuration: 'hostname DIST2
+
+    ip routing
+
+    '
+  interfaces:
+  - id: n3i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n3i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  - id: n3i2
+    slot: 2
+    label: GigabitEthernet0/2
+    type: physical
+  - id: n3i3
+    slot: 3
+    label: GigabitEthernet0/3
+    type: physical
+  - id: n3i4
+    slot: 4
+    label: GigabitEthernet1/0
+    type: physical
+  - id: n3i5
+    slot: 5
+    label: GigabitEthernet1/1
+    type: physical
+  ram: 768
+  tags:
+  - S1-EIGRP-core
+  - S3-FHRP-IPSLA
+- id: n4
+  label: ACC1
+  node_definition: iosvl2
+  x: -100
+  y: 100
+  configuration: 'hostname ACC1
+
+    '
+  interfaces:
+  - id: n4i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n4i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  - id: n4i2
+    slot: 2
+    label: GigabitEthernet0/2
+    type: physical
+  - id: n4i3
+    slot: 3
+    label: GigabitEthernet0/3
+    type: physical
+  ram: 768
+  tags:
+  - S2-L2-access
+- id: n5
+  label: ACC2
+  node_definition: iosvl2
+  x: 150
+  y: 100
+  configuration: 'hostname ACC2
+
+    '
+  interfaces:
+  - id: n5i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n5i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  ram: 768
+  tags:
+  - S2-L2-access
+- id: n6
+  label: ACC3
+  node_definition: iosvl2
+  x: 400
+  y: 100
+  configuration: 'hostname ACC3
+
+    '
+  interfaces:
+  - id: n6i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n6i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  ram: 768
+  tags:
+  - S2-L2-access
+- id: n7
+  label: WAN1
+  node_definition: iosv
+  x: 600
+  y: -50
+  configuration: 'hostname WAN1
+
+    ip routing
+
+    '
+  interfaces:
+  - id: n7i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n7i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  - id: n7i2
+    slot: 2
+    label: GigabitEthernet0/2
+    type: physical
+  - id: n7i3
+    slot: 3
+    label: GigabitEthernet0/3
+    type: physical
+  ram: 1024
+  tags:
+  - S1-EIGRP-core
+  - S6-DMVPN
+- id: n8
+  label: BRANCH-EDGE
+  node_definition: iosv
+  x: 900
+  y: -50
+  configuration: 'hostname BRANCH-EDGE
+
+    ip routing
+
+    '
+  interfaces:
+  - id: n8i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n8i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  - id: n8i2
+    slot: 2
+    label: GigabitEthernet0/2
+    type: physical
+  - id: n8i3
+    slot: 3
+    label: GigabitEthernet0/3
+    type: physical
+  ram: 1024
+  tags:
+  - S5-Redistribution
+  - S6-DMVPN
+- id: n9
+  label: BRANCH-R1
+  node_definition: iosv
+  x: 900
+  y: 100
+  configuration: 'hostname BRANCH-R1
+
+    ip routing
+
+    '
+  interfaces:
+  - id: n9i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n9i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  - id: n9i2
+    slot: 2
+    label: GigabitEthernet0/2
+    type: physical
+  ram: 1024
+  tags:
+  - S5-Redistribution
+- id: n10
+  label: BRANCH-SW
+  node_definition: iosvl2
+  x: 900
+  y: 250
+  configuration: 'hostname BRANCH-SW
+
+    '
+  interfaces:
+  - id: n10i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n10i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  ram: 768
+  tags:
+  - S5-Redistribution
+- id: n11
+  label: ISP1
+  node_definition: iosv
+  x: 600
+  y: -250
+  configuration: 'hostname ISP1
+
+    ip routing
+
+    '
+  interfaces:
+  - id: n11i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n11i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  - id: n11i2
+    slot: 2
+    label: GigabitEthernet0/2
+    type: physical
+  - id: n11i3
+    slot: 3
+    label: GigabitEthernet0/3
+    type: physical
+  ram: 1024
+  tags:
+  - S4-BGP
+- id: n12
+  label: ISP2
+  node_definition: iosv
+  x: 750
+  y: -250
+  configuration: 'hostname ISP2
+
+    ip routing
+
+    '
+  interfaces:
+  - id: n12i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n12i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  - id: n12i2
+    slot: 2
+    label: GigabitEthernet0/2
+    type: physical
+  ram: 1024
+  tags:
+  - S4-BGP
+- id: n13
+  label: SRV-CORE
+  node_definition: iosv
+  x: 150
+  y: 250
+  configuration: 'hostname SRV-CORE
+
+    ! stand-in services host: DHCP/NTP/syslog
+
+    '
+  interfaces:
+  - id: n13i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n13i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  ram: 512
+  tags:
+  - S1a-EIGRP-stub
+- id: n14
+  label: INET-SW
+  node_definition: unmanaged_switch
+  x: 675
+  y: -150
+  configuration: ''
+  interfaces:
+  - id: n14i0
+    slot: 0
+    label: port0
+    type: physical
+  - id: n14i1
+    slot: 1
+    label: port1
+    type: physical
+  - id: n14i2
+    slot: 2
+    label: port2
+    type: physical
+  - id: n14i3
+    slot: 3
+    label: port3
+    type: physical
+- id: n15
+  label: ACC-SW-EXT
+  node_definition: unmanaged_switch
+  x: 150
+  y: 175
+  configuration: ''
+  interfaces:
+  - id: n15i0
+    slot: 0
+    label: port0
+    type: physical
+  - id: n15i1
+    slot: 1
+    label: port1
+    type: physical
+- id: n16
+  label: OUTSIDE
+  node_definition: external_connector
+  x: 675
+  y: -350
+  configuration: bridge0
+  interfaces:
+  - id: n16i0
+    slot: 0
+    label: port
+    type: physical
+links:
+- id: l0
+  n1: n0
+  i1: n0i1
+  n2: n1
+  i2: n1i1
+- id: l1
+  n1: n0
+  i1: n0i2
+  n2: n2
+  i2: n2i1
+- id: l2
+  n1: n0
+  i1: n0i3
+  n2: n3
+  i2: n3i1
+- id: l3
+  n1: n1
+  i1: n1i2
+  n2: n2
+  i2: n2i2
+- id: l4
+  n1: n1
+  i1: n1i3
+  n2: n3
+  i2: n3i2
+- id: l5
+  n1: n2
+  i1: n2i3
+  n2: n3
+  i2: n3i3
+- id: l6
+  n1: n2
+  i1: n2i4
+  n2: n4
+  i2: n4i1
+- id: l7
+  n1: n3
+  i1: n3i4
+  n2: n4
+  i2: n4i2
+- id: l8
+  n1: n2
+  i1: n2i5
+  n2: n5
+  i2: n5i1
+- id: l9
+  n1: n3
+  i1: n3i5
+  n2: n6
+  i2: n6i1
+- id: l10
+  n1: n2
+  i1: n2i6
+  n2: n15
+  i2: n15i0
+- id: l11
+  n1: n15
+  i1: n15i1
+  n2: n13
+  i2: n13i1
+- id: l12
+  n1: n1
+  i1: n1i4
+  n2: n7
+  i2: n7i1
+- id: l13
+  n1: n7
+  i1: n7i2
+  n2: n8
+  i2: n8i1
+- id: l14
+  n1: n8
+  i1: n8i2
+  n2: n9
+  i2: n9i1
+- id: l15
+  n1: n9
+  i1: n9i2
+  n2: n10
+  i2: n10i1
+- id: l16
+  n1: n0
+  i1: n0i4
+  n2: n11
+  i2: n11i1
+- id: l17
+  n1: n1
+  i1: n1i5
+  n2: n12
+  i2: n12i1
+- id: l18
+  n1: n11
+  i1: n11i2
+  n2: n14
+  i2: n14i0
+- id: l19
+  n1: n12
+  i1: n12i2
+  n2: n14
+  i2: n14i1
+- id: l20
+  n1: n7
+  i1: n7i3
+  n2: n14
+  i2: n14i2
+- id: l21
+  n1: n8
+  i1: n8i3
+  n2: n14
+  i2: n14i3
+- id: l22
+  n1: n11
+  i1: n11i3
+  n2: n16
+  i2: n16i0
+- id: l23
+  n1: n4
+  i1: n4i3
+  n2: n2
+  i2: n2i7

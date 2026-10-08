@@ -1,0 +1,787 @@
+lab:
+  title: CCNP-Enterprise-Policy-ACL-RouteMap
+  description: 'Large CCNP policy lab (~22 nodes). Focus: ACLs and route-maps. Multi-protocol core (OSPF
+    + EIGRP) with three redistribution boundaries for route-map filtering/tagging; a BGP edge (two ISPs
+    + a partner) for route-map path control and communities; a PBR enforcement point with dual upstream
+    paths and IP SLA verify-availability; and host/server/DMZ segments for standard/extended/named/time-based/reflexive
+    ACLs, infrastructure ACLs, and CoPP. All p2p links /31. Section tags drive CML smart annotations.'
+  version: 0.1.0
+  notes: "SMART-ANNOTATION TAGS:\n  S1-OSPF-domain     EDGE-core-dist-access (left)\n  S1b-EIGRP-domain\
+    \   AGG/DC/BR (right)\n  S2-PBR             EDGE1, AGG2, BR1 (policy-based routing path)\n  S3-Redistribution\
+    \  CORE1/2, AGG1 (OSPF<->EIGRP, OSPF<->BGP)\n  S4-BGP-policy      EDGE1/2, ISP1/2, PARTNER\n  S5-Security-ACL\
+    \    EDGE/DIST/DC/PARTNER/servers (filtering targets)\nAll point-to-point links use /31 (RFC 3021).\n"
+nodes:
+- id: n0
+  label: EDGE1
+  node_definition: iosv
+  x: -300
+  y: -200
+  configuration: "hostname EDGE1\nip routing\n!\ninterface Loopback0\n ip address 10.0.0.1 255.255.255.255\n\
+    \ ip ospf 1 area 0\ninterface GigabitEthernet0/2\n description to CORE1\n ip address 10.1.0.0 255.255.255.254\n\
+    \ ip ospf 1 area 0\n ip ospf network point-to-point\n no shutdown\ninterface GigabitEthernet0/3\n\
+    \ description to CORE2\n ip address 10.1.0.4 255.255.255.254\n ip ospf 1 area 0\n ip ospf network\
+    \ point-to-point\n no shutdown\n!\nrouter ospf 1\n router-id 10.0.0.1\n"
+  interfaces:
+  - id: n0i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n0i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  - id: n0i2
+    slot: 2
+    label: GigabitEthernet0/2
+    type: physical
+  - id: n0i3
+    slot: 3
+    label: GigabitEthernet0/3
+    type: physical
+  - id: n0i4
+    slot: 4
+    label: GigabitEthernet0/4
+    type: physical
+  ram: 1024
+  tags:
+  - S4-BGP-policy
+  - S2-PBR
+  - S5-Security-ACL
+- id: n1
+  label: EDGE2
+  node_definition: iosv
+  x: -300
+  y: -40
+  configuration: "hostname EDGE2\nip routing\n!\ninterface Loopback0\n ip address 10.0.0.2 255.255.255.255\n\
+    \ ip ospf 1 area 0\ninterface GigabitEthernet0/2\n description to CORE2\n ip address 10.1.0.2 255.255.255.254\n\
+    \ ip ospf 1 area 0\n ip ospf network point-to-point\n no shutdown\ninterface GigabitEthernet0/3\n\
+    \ description to CORE1\n ip address 10.1.0.6 255.255.255.254\n ip ospf 1 area 0\n ip ospf network\
+    \ point-to-point\n no shutdown\n!\nrouter ospf 1\n router-id 10.0.0.2\n"
+  interfaces:
+  - id: n1i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n1i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  - id: n1i2
+    slot: 2
+    label: GigabitEthernet0/2
+    type: physical
+  - id: n1i3
+    slot: 3
+    label: GigabitEthernet0/3
+    type: physical
+  - id: n1i4
+    slot: 4
+    label: GigabitEthernet0/4
+    type: physical
+  ram: 1024
+  tags:
+  - S4-BGP-policy
+  - S5-Security-ACL
+- id: n2
+  label: CORE1
+  node_definition: iosv
+  x: -100
+  y: -200
+  configuration: "hostname CORE1\nip routing\n!\ninterface Loopback0\n ip address 10.0.0.3 255.255.255.255\n\
+    \ ip ospf 1 area 0\ninterface GigabitEthernet0/1\n description to EDGE1\n ip address 10.1.0.1 255.255.255.254\n\
+    \ ip ospf 1 area 0\n ip ospf network point-to-point\n no shutdown\ninterface GigabitEthernet0/2\n\
+    \ description to EDGE2\n ip address 10.1.0.7 255.255.255.254\n ip ospf 1 area 0\n ip ospf network\
+    \ point-to-point\n no shutdown\ninterface GigabitEthernet0/3\n description to CORE2\n ip address 10.1.0.8\
+    \ 255.255.255.254\n ip ospf 1 area 0\n ip ospf network point-to-point\n no shutdown\ninterface GigabitEthernet0/4\n\
+    \ description to DIST-A\n ip address 10.1.0.10 255.255.255.254\n ip ospf 1 area 0\n ip ospf network\
+    \ point-to-point\n no shutdown\ninterface GigabitEthernet0/5\n description to AGG1\n ip address 10.1.0.18\
+    \ 255.255.255.254\n ip ospf 1 area 0\n ip ospf network point-to-point\n no shutdown\n!\nrouter ospf\
+    \ 1\n router-id 10.0.0.3\n"
+  interfaces:
+  - id: n2i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n2i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  - id: n2i2
+    slot: 2
+    label: GigabitEthernet0/2
+    type: physical
+  - id: n2i3
+    slot: 3
+    label: GigabitEthernet0/3
+    type: physical
+  - id: n2i4
+    slot: 4
+    label: GigabitEthernet0/4
+    type: physical
+  - id: n2i5
+    slot: 5
+    label: GigabitEthernet0/5
+    type: physical
+  ram: 1024
+  tags:
+  - S1-OSPF-domain
+  - S3-Redistribution
+- id: n3
+  label: CORE2
+  node_definition: iosv
+  x: -100
+  y: -40
+  configuration: "hostname CORE2\nip routing\n!\ninterface Loopback0\n ip address 10.0.0.4 255.255.255.255\n\
+    \ ip ospf 1 area 0\ninterface GigabitEthernet0/1\n description to EDGE2\n ip address 10.1.0.3 255.255.255.254\n\
+    \ ip ospf 1 area 0\n ip ospf network point-to-point\n no shutdown\ninterface GigabitEthernet0/2\n\
+    \ description to EDGE1\n ip address 10.1.0.5 255.255.255.254\n ip ospf 1 area 0\n ip ospf network\
+    \ point-to-point\n no shutdown\ninterface GigabitEthernet0/3\n description to CORE1\n ip address 10.1.0.9\
+    \ 255.255.255.254\n ip ospf 1 area 0\n ip ospf network point-to-point\n no shutdown\ninterface GigabitEthernet0/4\n\
+    \ description to DIST-B\n ip address 10.1.0.12 255.255.255.254\n ip ospf 1 area 0\n ip ospf network\
+    \ point-to-point\n no shutdown\ninterface GigabitEthernet0/5\n description to AGG1\n ip address 10.1.0.16\
+    \ 255.255.255.254\n ip ospf 1 area 0\n ip ospf network point-to-point\n no shutdown\n!\nrouter ospf\
+    \ 1\n router-id 10.0.0.4\n"
+  interfaces:
+  - id: n3i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n3i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  - id: n3i2
+    slot: 2
+    label: GigabitEthernet0/2
+    type: physical
+  - id: n3i3
+    slot: 3
+    label: GigabitEthernet0/3
+    type: physical
+  - id: n3i4
+    slot: 4
+    label: GigabitEthernet0/4
+    type: physical
+  - id: n3i5
+    slot: 5
+    label: GigabitEthernet0/5
+    type: physical
+  ram: 1024
+  tags:
+  - S1-OSPF-domain
+  - S3-Redistribution
+- id: n4
+  label: DIST-A
+  node_definition: iosvl2
+  x: -100
+  y: 120
+  configuration: "hostname DIST-A\nip routing\n!\ninterface Loopback0\n ip address 10.0.0.5 255.255.255.255\n\
+    \ ip ospf 1 area 0\ninterface GigabitEthernet0/1\n description to CORE1\n no switchport\n ip address\
+    \ 10.1.0.11 255.255.255.254\n ip ospf 1 area 0\n ip ospf network point-to-point\n no shutdown\ninterface\
+    \ GigabitEthernet0/2\n description to DIST-B (peer)\n no switchport\n ip address 10.1.0.14 255.255.255.254\n\
+    \ ip ospf 1 area 0\n ip ospf network point-to-point\n no shutdown\n!\n! Gi0/3 -> ACC-A1 stays L2 (access/trunk);\
+    \ user SVIs added in policy sections\nvlan 10\n name USER10\ninterface Vlan10\n ip address 192.168.10.1\
+    \ 255.255.255.0\n ip ospf 1 area 0\n!\nrouter ospf 1\n router-id 10.0.0.5\n passive-interface Vlan10\n"
+  interfaces:
+  - id: n4i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n4i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  - id: n4i2
+    slot: 2
+    label: GigabitEthernet0/2
+    type: physical
+  - id: n4i3
+    slot: 3
+    label: GigabitEthernet0/3
+    type: physical
+  ram: 768
+  tags:
+  - S1-OSPF-domain
+  - S5-Security-ACL
+- id: n5
+  label: DIST-B
+  node_definition: iosvl2
+  x: 100
+  y: 120
+  configuration: "hostname DIST-B\nip routing\n!\ninterface Loopback0\n ip address 10.0.0.6 255.255.255.255\n\
+    \ ip ospf 1 area 0\ninterface GigabitEthernet0/1\n description to CORE2\n no switchport\n ip address\
+    \ 10.1.0.13 255.255.255.254\n ip ospf 1 area 0\n ip ospf network point-to-point\n no shutdown\ninterface\
+    \ GigabitEthernet0/2\n description to DIST-A (peer)\n no switchport\n ip address 10.1.0.15 255.255.255.254\n\
+    \ ip ospf 1 area 0\n ip ospf network point-to-point\n no shutdown\n!\nvlan 20\n name USER20\ninterface\
+    \ Vlan20\n ip address 192.168.20.1 255.255.255.0\n ip ospf 1 area 0\n!\nrouter ospf 1\n router-id\
+    \ 10.0.0.6\n passive-interface Vlan20\n"
+  interfaces:
+  - id: n5i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n5i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  - id: n5i2
+    slot: 2
+    label: GigabitEthernet0/2
+    type: physical
+  - id: n5i3
+    slot: 3
+    label: GigabitEthernet0/3
+    type: physical
+  ram: 768
+  tags:
+  - S1-OSPF-domain
+  - S5-Security-ACL
+- id: n6
+  label: ACC-A1
+  node_definition: iosvl2
+  x: -160
+  y: 260
+  configuration: 'hostname ACC-A1
+
+    ip routing
+
+    '
+  interfaces:
+  - id: n6i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n6i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  ram: 768
+  tags:
+  - S1-OSPF-domain
+- id: n7
+  label: ACC-A2
+  node_definition: iosvl2
+  x: 40
+  y: 260
+  configuration: 'hostname ACC-A2
+
+    ip routing
+
+    '
+  interfaces:
+  - id: n7i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n7i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  ram: 768
+  tags:
+  - S1-OSPF-domain
+- id: n8
+  label: AGG1
+  node_definition: iosv
+  x: 300
+  y: -120
+  configuration: "hostname AGG1\nip routing\n!\ninterface Loopback0\n ip address 10.0.0.8 255.255.255.255\n\
+    \ ip ospf 1 area 0\ninterface GigabitEthernet0/1\n description to CORE2 (OSPF)\n ip address 10.1.0.17\
+    \ 255.255.255.254\n ip ospf 1 area 0\n ip ospf network point-to-point\n no shutdown\ninterface GigabitEthernet0/2\n\
+    \ description to CORE1 (OSPF)\n ip address 10.1.0.19 255.255.255.254\n ip ospf 1 area 0\n ip ospf\
+    \ network point-to-point\n no shutdown\ninterface GigabitEthernet0/3\n description to AGG2 (EIGRP)\n\
+    \ ip address 10.1.0.20 255.255.255.254\n no shutdown\ninterface GigabitEthernet0/4\n description to\
+    \ DC1 (EIGRP)\n ip address 10.1.0.22 255.255.255.254\n no shutdown\ninterface GigabitEthernet0/5\n\
+    \ description to BR1 (EIGRP)\n ip address 10.1.0.26 255.255.255.254\n no shutdown\n!\nrouter ospf\
+    \ 1\n router-id 10.0.0.8\n!\nrouter eigrp DC\n address-family ipv4 unicast autonomous-system 100\n\
+    \  eigrp router-id 10.0.0.8\n  network 10.1.0.20 0.0.0.1\n  network 10.1.0.22 0.0.0.1\n  network 10.1.0.26\
+    \ 0.0.0.1\n"
+  interfaces:
+  - id: n8i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n8i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  - id: n8i2
+    slot: 2
+    label: GigabitEthernet0/2
+    type: physical
+  - id: n8i3
+    slot: 3
+    label: GigabitEthernet0/3
+    type: physical
+  - id: n8i4
+    slot: 4
+    label: GigabitEthernet0/4
+    type: physical
+  - id: n8i5
+    slot: 5
+    label: GigabitEthernet0/5
+    type: physical
+  ram: 1024
+  tags:
+  - S1b-EIGRP-domain
+  - S3-Redistribution
+- id: n9
+  label: AGG2
+  node_definition: iosv
+  x: 500
+  y: -120
+  configuration: "hostname AGG2\nip routing\n!\ninterface Loopback0\n ip address 10.0.0.9 255.255.255.255\n\
+    interface GigabitEthernet0/1\n description to AGG1\n ip address 10.1.0.21 255.255.255.254\n no shutdown\n\
+    interface GigabitEthernet0/2\n description to DC1\n ip address 10.1.0.24 255.255.255.254\n no shutdown\n\
+    interface GigabitEthernet0/3\n description to BR1 (PBR path)\n ip address 10.1.0.29 255.255.255.254\n\
+    \ no shutdown\n!\nrouter eigrp DC\n address-family ipv4 unicast autonomous-system 100\n  eigrp router-id\
+    \ 10.0.0.9\n  network 10.0.0.9 0.0.0.0\n  network 10.1.0.20 0.0.0.1\n  network 10.1.0.24 0.0.0.1\n\
+    \  network 10.1.0.28 0.0.0.1\n"
+  interfaces:
+  - id: n9i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n9i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  - id: n9i2
+    slot: 2
+    label: GigabitEthernet0/2
+    type: physical
+  - id: n9i3
+    slot: 3
+    label: GigabitEthernet0/3
+    type: physical
+  ram: 1024
+  tags:
+  - S1b-EIGRP-domain
+  - S2-PBR
+- id: n10
+  label: DC1
+  node_definition: iosv
+  x: 300
+  y: 40
+  configuration: "hostname DC1\nip routing\n!\ninterface Loopback0\n ip address 10.0.0.10 255.255.255.255\n\
+    interface GigabitEthernet0/1\n description to AGG1\n ip address 10.1.0.23 255.255.255.254\n no shutdown\n\
+    interface GigabitEthernet0/2\n description to AGG2\n ip address 10.1.0.25 255.255.255.254\n no shutdown\n\
+    interface GigabitEthernet0/3\n description to DC-SW (server LAN)\n ip address 10.30.0.1 255.255.255.0\n\
+    \ no shutdown\ninterface GigabitEthernet0/4\n description to SRV-INT\n ip address 10.20.0.1 255.255.255.0\n\
+    \ no shutdown\n!\nrouter eigrp DC\n address-family ipv4 unicast autonomous-system 100\n  eigrp router-id\
+    \ 10.0.0.10\n  network 10.0.0.10 0.0.0.0\n  network 10.1.0.22 0.0.0.1\n  network 10.1.0.24 0.0.0.1\n\
+    \  network 10.30.0.0 0.0.0.255\n  network 10.20.0.0 0.0.0.255\n"
+  interfaces:
+  - id: n10i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n10i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  - id: n10i2
+    slot: 2
+    label: GigabitEthernet0/2
+    type: physical
+  - id: n10i3
+    slot: 3
+    label: GigabitEthernet0/3
+    type: physical
+  - id: n10i4
+    slot: 4
+    label: GigabitEthernet0/4
+    type: physical
+  ram: 1024
+  tags:
+  - S1b-EIGRP-domain
+  - S5-Security-ACL
+- id: n11
+  label: DC-SW
+  node_definition: iosvl2
+  x: 300
+  y: 180
+  configuration: 'hostname DC-SW
+
+    ip routing
+
+    '
+  interfaces:
+  - id: n11i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n11i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  ram: 768
+  tags:
+  - S1b-EIGRP-domain
+- id: n12
+  label: BR1
+  node_definition: iosv
+  x: 620
+  y: -40
+  configuration: "hostname BR1\nip routing\n!\ninterface Loopback0\n ip address 10.0.0.12 255.255.255.255\n\
+    interface GigabitEthernet0/1\n description to AGG1 (primary)\n ip address 10.1.0.27 255.255.255.254\n\
+    \ no shutdown\ninterface GigabitEthernet0/2\n description to AGG2 (PBR path)\n ip address 10.1.0.28\
+    \ 255.255.255.254\n no shutdown\ninterface GigabitEthernet0/3\n description to BR-SW (branch LAN)\n\
+    \ ip address 10.40.0.1 255.255.255.0\n no shutdown\n!\nrouter eigrp DC\n address-family ipv4 unicast\
+    \ autonomous-system 100\n  eigrp router-id 10.0.0.12\n  network 10.1.0.26 0.0.0.1\n  network 10.1.0.28\
+    \ 0.0.0.1\n  network 10.40.0.0 0.0.0.255\n"
+  interfaces:
+  - id: n12i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n12i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  - id: n12i2
+    slot: 2
+    label: GigabitEthernet0/2
+    type: physical
+  - id: n12i3
+    slot: 3
+    label: GigabitEthernet0/3
+    type: physical
+  ram: 1024
+  tags:
+  - S1b-EIGRP-domain
+  - S2-PBR
+- id: n13
+  label: BR-SW
+  node_definition: iosvl2
+  x: 620
+  y: 100
+  configuration: 'hostname BR-SW
+
+    ip routing
+
+    '
+  interfaces:
+  - id: n13i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n13i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  ram: 768
+  tags:
+  - S1b-EIGRP-domain
+- id: n14
+  label: ISP1
+  node_definition: iosv
+  x: -520
+  y: -260
+  configuration: "hostname ISP1\nip routing\n!\ninterface Loopback0\n ip address 172.16.1.1 255.255.255.255\n\
+    interface Loopback1\n ip address 203.0.113.1 255.255.255.0\ninterface GigabitEthernet0/1\n description\
+    \ to peering fabric\n ip address 100.64.0.101 255.255.255.0\n no shutdown\n!\nrouter bgp 65101\n bgp\
+    \ router-id 172.16.1.1\n neighbor 100.64.0.1 remote-as 65000\n address-family ipv4\n  neighbor 100.64.0.1\
+    \ activate\n  network 203.0.113.0 mask 255.255.255.0\n"
+  interfaces:
+  - id: n14i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n14i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  - id: n14i2
+    slot: 2
+    label: GigabitEthernet0/2
+    type: physical
+  ram: 1024
+  tags:
+  - S4-BGP-policy
+- id: n15
+  label: ISP2
+  node_definition: iosv
+  x: -520
+  y: -120
+  configuration: "hostname ISP2\nip routing\n!\ninterface Loopback0\n ip address 172.16.2.1 255.255.255.255\n\
+    interface Loopback1\n ip address 203.0.114.1 255.255.255.0\ninterface GigabitEthernet0/1\n description\
+    \ to peering fabric\n ip address 100.64.0.102 255.255.255.0\n no shutdown\n!\nrouter bgp 65102\n bgp\
+    \ router-id 172.16.2.1\n neighbor 100.64.0.2 remote-as 65000\n address-family ipv4\n  neighbor 100.64.0.2\
+    \ activate\n  network 203.0.114.0 mask 255.255.255.0\n"
+  interfaces:
+  - id: n15i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n15i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  ram: 1024
+  tags:
+  - S4-BGP-policy
+- id: n16
+  label: PARTNER
+  node_definition: iosv
+  x: -520
+  y: 20
+  configuration: "hostname PARTNER\nip routing\n!\ninterface Loopback0\n ip address 172.16.20.1 255.255.255.255\n\
+    interface Loopback1\n ip address 198.51.100.1 255.255.255.0\ninterface GigabitEthernet0/1\n description\
+    \ to peering fabric\n ip address 100.64.0.200 255.255.255.0\n no shutdown\n!\nrouter bgp 65200\n bgp\
+    \ router-id 172.16.20.1\n neighbor 100.64.0.1 remote-as 65000\n address-family ipv4\n  neighbor 100.64.0.1\
+    \ activate\n  network 198.51.100.0 mask 255.255.255.0\n"
+  interfaces:
+  - id: n16i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n16i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  ram: 1024
+  tags:
+  - S4-BGP-policy
+  - S5-Security-ACL
+- id: n17
+  label: SRV-PUB
+  node_definition: iosv
+  x: -300
+  y: 120
+  configuration: "hostname SRV-PUB\nip routing\n!\ninterface GigabitEthernet0/1\n description DMZ segment\n\
+    \ ip address 172.31.0.10 255.255.255.0\n no shutdown\n!\nip route 0.0.0.0 0.0.0.0 172.31.0.1\n"
+  interfaces:
+  - id: n17i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n17i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  ram: 512
+  tags:
+  - S5-Security-ACL
+- id: n18
+  label: SRV-INT
+  node_definition: iosv
+  x: 120
+  y: 40
+  configuration: "hostname SRV-INT\nip routing\n!\ninterface GigabitEthernet0/1\n description to DC1\n\
+    \ ip address 10.20.0.10 255.255.255.0\n no shutdown\n!\nip route 0.0.0.0 0.0.0.0 10.20.0.1\n"
+  interfaces:
+  - id: n18i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n18i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  ram: 512
+  tags:
+  - S5-Security-ACL
+- id: n19
+  label: INET-SW
+  node_definition: unmanaged_switch
+  x: -520
+  y: -140
+  configuration: ''
+  interfaces:
+  - id: n19i0
+    slot: 0
+    label: port0
+    type: physical
+  - id: n19i1
+    slot: 1
+    label: port1
+    type: physical
+  - id: n19i2
+    slot: 2
+    label: port2
+    type: physical
+  - id: n19i3
+    slot: 3
+    label: port3
+    type: physical
+  - id: n19i4
+    slot: 4
+    label: port4
+    type: physical
+- id: n20
+  label: DMZ-SW
+  node_definition: unmanaged_switch
+  x: -300
+  y: 260
+  configuration: ''
+  interfaces:
+  - id: n20i0
+    slot: 0
+    label: port0
+    type: physical
+  - id: n20i1
+    slot: 1
+    label: port1
+    type: physical
+  - id: n20i2
+    slot: 2
+    label: port2
+    type: physical
+- id: n21
+  label: OUTSIDE
+  node_definition: external_connector
+  x: -680
+  y: -260
+  configuration: bridge0
+  interfaces:
+  - id: n21i0
+    slot: 0
+    label: port
+    type: physical
+links:
+- id: l0
+  n1: n14
+  i1: n14i1
+  n2: n19
+  i2: n19i0
+- id: l1
+  n1: n15
+  i1: n15i1
+  n2: n19
+  i2: n19i1
+- id: l2
+  n1: n16
+  i1: n16i1
+  n2: n19
+  i2: n19i2
+- id: l3
+  n1: n0
+  i1: n0i1
+  n2: n19
+  i2: n19i3
+- id: l4
+  n1: n1
+  i1: n1i1
+  n2: n19
+  i2: n19i4
+- id: l5
+  n1: n0
+  i1: n0i2
+  n2: n2
+  i2: n2i1
+- id: l6
+  n1: n1
+  i1: n1i2
+  n2: n3
+  i2: n3i1
+- id: l7
+  n1: n0
+  i1: n0i3
+  n2: n3
+  i2: n3i2
+- id: l8
+  n1: n1
+  i1: n1i3
+  n2: n2
+  i2: n2i2
+- id: l9
+  n1: n2
+  i1: n2i3
+  n2: n3
+  i2: n3i3
+- id: l10
+  n1: n2
+  i1: n2i4
+  n2: n4
+  i2: n4i1
+- id: l11
+  n1: n3
+  i1: n3i4
+  n2: n5
+  i2: n5i1
+- id: l12
+  n1: n4
+  i1: n4i2
+  n2: n5
+  i2: n5i2
+- id: l13
+  n1: n4
+  i1: n4i3
+  n2: n6
+  i2: n6i1
+- id: l14
+  n1: n5
+  i1: n5i3
+  n2: n7
+  i2: n7i1
+- id: l15
+  n1: n0
+  i1: n0i4
+  n2: n20
+  i2: n20i0
+- id: l16
+  n1: n20
+  i1: n20i1
+  n2: n17
+  i2: n17i1
+- id: l17
+  n1: n20
+  i1: n20i2
+  n2: n1
+  i2: n1i4
+- id: l18
+  n1: n3
+  i1: n3i5
+  n2: n8
+  i2: n8i1
+- id: l19
+  n1: n2
+  i1: n2i5
+  n2: n8
+  i2: n8i2
+- id: l20
+  n1: n8
+  i1: n8i3
+  n2: n9
+  i2: n9i1
+- id: l21
+  n1: n8
+  i1: n8i4
+  n2: n10
+  i2: n10i1
+- id: l22
+  n1: n9
+  i1: n9i2
+  n2: n10
+  i2: n10i2
+- id: l23
+  n1: n10
+  i1: n10i3
+  n2: n11
+  i2: n11i1
+- id: l24
+  n1: n18
+  i1: n18i1
+  n2: n10
+  i2: n10i4
+- id: l25
+  n1: n12
+  i1: n12i1
+  n2: n8
+  i2: n8i5
+- id: l26
+  n1: n12
+  i1: n12i2
+  n2: n9
+  i2: n9i3
+- id: l27
+  n1: n12
+  i1: n12i3
+  n2: n13
+  i2: n13i1
+- id: l28
+  n1: n14
+  i1: n14i2
+  n2: n21
+  i2: n21i0
