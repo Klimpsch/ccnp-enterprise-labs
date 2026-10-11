@@ -2,7 +2,7 @@
 
 A ~22-node CML lab built to exercise ACLs and route-maps end to end across two IGPs, a BGP edge and a PBR path. Full walkthrough in [ccnp-policy-acl-routemap-guide.md](ccnp-policy-acl-routemap-guide.md).
 
-## Lab at a glance
+## Lab Details
 
 - **Routing substrate:** OSPF Area 0 on the campus side, EIGRP AS 100 named mode on the DC/branch side
 - **PBR:** branch traffic steered to a second upstream on BR1, with IP SLA and verify-availability for fail-back

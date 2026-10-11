@@ -8,7 +8,7 @@ A set of Cisco Modeling Labs (CML) builds for CCNP Enterprise (ENCOR/ENARSI) pra
 |---|---|
 | [EIGRP Core](eigrp-core/) | EIGRP named-mode core, EIGRP ↔ OSPF redistribution, BGP edge, DMVPN |
 | [OSPF Core](ospf-core/) | Per-interface OSPF core with NSSA and stub areas, OSPF ↔ EIGRP redistribution, BGP edge, DMVPN |
-| [Policy — ACLs & Route-Maps](policy-acl-routemap/) | PBR, redistribution route-maps, BGP path control, security ACLs and CoPP |
+| [Policy ACLs & Route-Maps](policy-acl-routemap/) | PBR, redistribution route-maps, BGP path control, security ACLs and CoPP |
 
 ## What's covered
 
@@ -18,9 +18,6 @@ A set of Cisco Modeling Labs (CML) builds for CCNP Enterprise (ENCOR/ENARSI) pra
 - **WAN:** DMVPN Phase 1 hub-and-spoke with a routing protocol over the tunnel
 - **Policy and security:** PBR, route-maps, prefix-lists, communities, extended, time-based and reflexive ACLs, infrastructure ACLs and CoPP
 
-## How to use
-
-- Import the lab topology into CML and check the interface mapping against the guide
 
 ## Requirements
 

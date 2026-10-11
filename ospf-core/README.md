@@ -2,7 +2,7 @@
 
 A CML lab built around a per-interface OSPF core, layered with campus, WAN and internet-edge features. Full walkthrough in [ccnp-lab-config-guide-enterprise.md](ccnp-lab-config-guide-enterprise.md).
 
-## Lab at a glance
+## Lab Details
 
 - **OSPF core:** Area 0 on CORE1/CORE2/DIST1/DIST2, enabled per interface, with point-to-point /31s and SHA-256 auth
 - **Area types:** NSSA Area 20 toward the branch (WAN1 as ABR), stub Area 10 toward services

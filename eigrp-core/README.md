@@ -2,7 +2,7 @@
 
 A CML lab built around an EIGRP named-mode core, layered with campus, WAN and internet-edge features. Full walkthrough in [ccnp-eigrp-lab-config-guide.md](ccnp-eigrp-lab-config-guide.md).
 
-## Lab at a glance
+## Lab details
 
 - **EIGRP core:** AS 100 named mode on CORE1/CORE2/DIST1/DIST2 with SHA-256 auth, summarization, a stub and variance
 - **Layer 2 access:** VLANs 10/20/99, LACP EtherChannel, RSTP root split, port hardening
