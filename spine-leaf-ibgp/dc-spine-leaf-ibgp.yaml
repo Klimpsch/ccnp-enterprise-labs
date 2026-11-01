@@ -1,0 +1,433 @@
+lab:
+  title: DC-Spine-Leaf-iBGP-Template
+  description: Data center spine-leaf fabric template (IOSv). 2 spines, 4 leaves, and one server host per leaf. Full-mesh spine-to-leaf cabling, no spine-spine or leaf-leaf links. Intended design is an OSPF underlay (loopback reachability + ECMP) with iBGP AS 65000 on top, spines acting as route reflectors and leaves as RR clients advertising their server subnets. NOTHING IS PRE-CONFIGURED except hostnames - the whole build is the lab. Section tags drive smart-annotation borders. See the companion .md guide.
+  version: 0.2.0
+  notes: |
+    DC SPINE-LEAF iBGP TEMPLATE (smart-annotation tags):
+      S-SPINE     SPINE1, SPINE2 (iBGP route reflectors)
+      S-LEAF      LEAF1-4 (iBGP RR clients, server default gateways)
+      S-HOST      HOST1-4 (one server per leaf)
+      S-UNDERLAY  spines + leaves (OSPF area 0, /31 fabric links, Loopback0)
+      S-OVERLAY   spines + leaves (iBGP AS 65000 between Loopback0s)
+    CABLING:
+      SPINE1 Gi0/1-4 -> LEAF1-4 Gi0/1
+      SPINE2 Gi0/1-4 -> LEAF1-4 Gi0/2
+      LEAFn  Gi0/3   -> HOSTn  Gi0/1
+      Gi0/0 on every node is left unused (reserved for OOB mgmt).
+    ADDRESSING (see guide):
+      Loopback0     10.0.0.0/24  (spines .1-.2, leaves .11-.14)
+      Fabric links  10.1.1.0/24 via SPINE1, 10.1.2.0/24 via SPINE2 (/31s, spine = even, leaf = odd)
+      Server LANs   172.16.N.0/24 behind LEAFN (leaf .1, host .10)
+    PRE-LOADED (day-0): hostnames only.
+    NOT pre-loaded: interfaces, IP addressing, OSPF, iBGP, host config - that's the lab (guide Labs 1-5).
+nodes:
+- id: n0
+  label: SPINE1
+  node_definition: iosv
+  x: -160
+  y: -200
+  configuration: |
+    hostname SPINE1
+    !
+    end
+  interfaces:
+  - id: n0i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n0i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  - id: n0i2
+    slot: 2
+    label: GigabitEthernet0/2
+    type: physical
+  - id: n0i3
+    slot: 3
+    label: GigabitEthernet0/3
+    type: physical
+  - id: n0i4
+    slot: 4
+    label: GigabitEthernet0/4
+    type: physical
+  ram: 1024
+  tags:
+  - S-SPINE
+  - S-UNDERLAY
+  - S-OVERLAY
+- id: n1
+  label: SPINE2
+  node_definition: iosv
+  x: 160
+  y: -200
+  configuration: |
+    hostname SPINE2
+    !
+    end
+  interfaces:
+  - id: n1i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n1i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  - id: n1i2
+    slot: 2
+    label: GigabitEthernet0/2
+    type: physical
+  - id: n1i3
+    slot: 3
+    label: GigabitEthernet0/3
+    type: physical
+  - id: n1i4
+    slot: 4
+    label: GigabitEthernet0/4
+    type: physical
+  ram: 1024
+  tags:
+  - S-SPINE
+  - S-UNDERLAY
+  - S-OVERLAY
+- id: n2
+  label: LEAF1
+  node_definition: iosv
+  x: -360
+  y: 0
+  configuration: |
+    hostname LEAF1
+    !
+    end
+  interfaces:
+  - id: n2i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n2i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  - id: n2i2
+    slot: 2
+    label: GigabitEthernet0/2
+    type: physical
+  - id: n2i3
+    slot: 3
+    label: GigabitEthernet0/3
+    type: physical
+  ram: 1024
+  tags:
+  - S-LEAF
+  - S-UNDERLAY
+  - S-OVERLAY
+- id: n3
+  label: LEAF2
+  node_definition: iosv
+  x: -120
+  y: 0
+  configuration: |
+    hostname LEAF2
+    !
+    end
+  interfaces:
+  - id: n3i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n3i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  - id: n3i2
+    slot: 2
+    label: GigabitEthernet0/2
+    type: physical
+  - id: n3i3
+    slot: 3
+    label: GigabitEthernet0/3
+    type: physical
+  ram: 1024
+  tags:
+  - S-LEAF
+  - S-UNDERLAY
+  - S-OVERLAY
+- id: n4
+  label: LEAF3
+  node_definition: iosv
+  x: 120
+  y: 0
+  configuration: |
+    hostname LEAF3
+    !
+    end
+  interfaces:
+  - id: n4i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n4i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  - id: n4i2
+    slot: 2
+    label: GigabitEthernet0/2
+    type: physical
+  - id: n4i3
+    slot: 3
+    label: GigabitEthernet0/3
+    type: physical
+  ram: 1024
+  tags:
+  - S-LEAF
+  - S-UNDERLAY
+  - S-OVERLAY
+- id: n5
+  label: LEAF4
+  node_definition: iosv
+  x: 360
+  y: 0
+  configuration: |
+    hostname LEAF4
+    !
+    end
+  interfaces:
+  - id: n5i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n5i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  - id: n5i2
+    slot: 2
+    label: GigabitEthernet0/2
+    type: physical
+  - id: n5i3
+    slot: 3
+    label: GigabitEthernet0/3
+    type: physical
+  ram: 1024
+  tags:
+  - S-LEAF
+  - S-UNDERLAY
+  - S-OVERLAY
+- id: n6
+  label: HOST1
+  node_definition: iosv
+  x: -360
+  y: 160
+  configuration: |
+    hostname HOST1
+    !
+    end
+  interfaces:
+  - id: n6i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n6i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  ram: 512
+  tags:
+  - S-HOST
+- id: n7
+  label: HOST2
+  node_definition: iosv
+  x: -120
+  y: 160
+  configuration: |
+    hostname HOST2
+    !
+    end
+  interfaces:
+  - id: n7i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n7i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  ram: 512
+  tags:
+  - S-HOST
+- id: n8
+  label: HOST3
+  node_definition: iosv
+  x: 120
+  y: 160
+  configuration: |
+    hostname HOST3
+    !
+    end
+  interfaces:
+  - id: n8i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n8i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  ram: 512
+  tags:
+  - S-HOST
+- id: n9
+  label: HOST4
+  node_definition: iosv
+  x: 360
+  y: 160
+  configuration: |
+    hostname HOST4
+    !
+    end
+  interfaces:
+  - id: n9i0
+    slot: 0
+    label: GigabitEthernet0/0
+    type: physical
+  - id: n9i1
+    slot: 1
+    label: GigabitEthernet0/1
+    type: physical
+  ram: 512
+  tags:
+  - S-HOST
+links:
+- id: l0
+  n1: n0
+  i1: n0i1
+  n2: n2
+  i2: n2i1
+- id: l1
+  n1: n0
+  i1: n0i2
+  n2: n3
+  i2: n3i1
+- id: l2
+  n1: n0
+  i1: n0i3
+  n2: n4
+  i2: n4i1
+- id: l3
+  n1: n0
+  i1: n0i4
+  n2: n5
+  i2: n5i1
+- id: l4
+  n1: n1
+  i1: n1i1
+  n2: n2
+  i2: n2i2
+- id: l5
+  n1: n1
+  i1: n1i2
+  n2: n3
+  i2: n3i2
+- id: l6
+  n1: n1
+  i1: n1i3
+  n2: n4
+  i2: n4i2
+- id: l7
+  n1: n1
+  i1: n1i4
+  n2: n5
+  i2: n5i2
+- id: l8
+  n1: n2
+  i1: n2i3
+  n2: n6
+  i2: n6i1
+- id: l9
+  n1: n3
+  i1: n3i3
+  n2: n7
+  i2: n7i1
+- id: l10
+  n1: n4
+  i1: n4i3
+  n2: n8
+  i2: n8i1
+- id: l11
+  n1: n5
+  i1: n5i3
+  n2: n9
+  i2: n9i1
+smart_annotations:
+- id: sa0
+  tag: S-UNDERLAY
+  label: UNDERLAY - OSPF area 0
+  is_on: true
+  padding: 90
+  tag_offset_x: 0
+  tag_offset_y: 0
+  tag_size: 14
+  group_distance: 400
+  thickness: 2
+  border_style: ''
+  fill_color: '#F59E0B26'
+  border_color: '#D97706FF'
+  z_index: 1
+- id: sa1
+  tag: S-OVERLAY
+  label: OVERLAY - iBGP AS 65000
+  is_on: true
+  padding: 65
+  tag_offset_x: 0
+  tag_offset_y: 0
+  tag_size: 14
+  group_distance: 400
+  thickness: 2
+  border_style: ''
+  fill_color: '#8B5CF626'
+  border_color: '#7C3AEDFF'
+  z_index: 2
+- id: sa2
+  tag: S-SPINE
+  label: SPINES (route reflectors)
+  is_on: true
+  padding: 35
+  tag_offset_x: 0
+  tag_offset_y: 0
+  tag_size: 14
+  group_distance: 400
+  thickness: 1
+  border_style: ''
+  fill_color: '#3B82F659'
+  border_color: '#1D4ED8FF'
+  z_index: 3
+- id: sa3
+  tag: S-LEAF
+  label: LEAVES (RR clients)
+  is_on: true
+  padding: 35
+  tag_offset_x: 0
+  tag_offset_y: 0
+  tag_size: 14
+  group_distance: 400
+  thickness: 1
+  border_style: ''
+  fill_color: '#10B98159'
+  border_color: '#047857FF'
+  z_index: 3
+- id: sa4
+  tag: S-HOST
+  label: SERVERS
+  is_on: true
+  padding: 35
+  tag_offset_x: 0
+  tag_offset_y: 0
+  tag_size: 14
+  group_distance: 400
+  thickness: 1
+  border_style: ''
+  fill_color: '#EF444459'
+  border_color: '#B91C1CFF'
+  z_index: 3
